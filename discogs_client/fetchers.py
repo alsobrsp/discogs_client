@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import requests
 from requests.api import request
 from oauthlib import oauth1
+import time
 import json
 import os
 import re
@@ -52,15 +53,36 @@ class RequestsFetcher(Fetcher):
         resp = requests.request(method, url, data=data, headers=headers)
         return resp.content, resp.status_code
 
+delay_map = {
+    0: 60,
+    1: 30,
+    2: 10,
+    3: 5,
+    4: 2,
+    5: 1,
+    6: 0.5,
+    7: 0.1
+}
 
 class UserTokenRequestsFetcher(Fetcher):
     """Fetches via HTTP from the Discogs API using user_token authentication"""
     def __init__(self, user_token):
         self.user_token = user_token
+        self.used = 0
+        self.remaining = 60
 
     def fetch(self, client, method, url, data=None, headers=None, json=True):
+        if self.remaining < self.used:
+            delay = delay_map.get(self.remaining, 0)
+            if delay > 0:
+                time.sleep(delay)
         resp = requests.request(method, url, params={'token':self.user_token},
                                 data=data, headers=headers)
+        used = resp.headers['X-Discogs-Ratelimit-Used']
+        self.used = int(used) if used else 0
+        remaining = resp.headers['X-Discogs-Ratelimit-Remaining']
+        self.remaining = int(remaining) if remaining else 60
+
         return resp.content, resp.status_code
 
 
