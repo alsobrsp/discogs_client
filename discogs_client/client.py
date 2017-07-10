@@ -175,6 +175,10 @@ class Client(object):
         """Fetch a User by username."""
         return models.User(self, {'username': username})
 
+    def userlist(self, id):
+        """Fetch user list by ID."""
+        return models.UserList(self, {'id': id})
+
     def listing(self, id):
         """Fetch a Marketplace Listing by ID."""
         return models.Listing(self, {'id': id})
