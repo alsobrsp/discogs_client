@@ -592,6 +592,7 @@ class WantlistItem(PrimaryAPIObject):
 # TODO: notes should be first-order (somehow); needs resource_url
 class CollectionItemInstance(PrimaryAPIObject):
     id = SimpleField()
+    instance_id = SimpleField()
     rating = SimpleField()
     folder_id = SimpleField()
     notes = SimpleField()
