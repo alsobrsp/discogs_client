@@ -484,6 +484,7 @@ class Release(PrimaryAPIObject):
     released = SimpleField()
     estimated_weight = SimpleField()
     date_added = SimpleField()
+    lowest_price = SimpleField()
 
     def __init__(self, client, dict_):
         super(Release, self).__init__(client, dict_)
@@ -570,6 +571,10 @@ class User(PrimaryAPIObject):
         return PaginatedList(self.client, self.client._base_url + '/marketplace/orders', 'orders', Order)
 
     @property
+    def lists(self):
+        return PaginatedList(self.client, self.client._base_url + '/users/' + self.username + '/lists', 'lists', UserList)
+
+    @property
     def collection_folders(self):
         resp = self.client._get(self.fetch('collection_folders_url'))
         return [CollectionFolder(self.client, d) for d in resp['folders']]
@@ -590,6 +595,37 @@ class WantlistItem(PrimaryAPIObject):
 
     def __repr__(self):
         return self.repr_str('<WantlistItem {0!r} {1!r}>'.format(self.id, self.release.title))
+
+
+class UserListItem(SecondaryAPIObject):
+    id = SimpleField()
+    display_title = SimpleField()
+    type = SimpleField()
+    url = SimpleField(key='uri')
+    comment = SimpleField()
+    image_url = SimpleField()
+    release = ObjectField('Release', as_id=True, key='id')
+
+    def __repr__(self):
+        return self.repr_str('<UserListItem {0!r}>'.format(self.display_title))
+
+
+class UserList(PrimaryAPIObject):
+    id = SimpleField()
+    date_added = SimpleField()
+    date_changed = SimpleField()
+    name = SimpleField()
+    url = SimpleField(key='uri')
+    public = SimpleField()
+    description = SimpleField()
+    items = ListField('UserListItem', key='items')
+
+    def __init__(self, client, dict_):
+        super(UserList, self).__init__(client, dict_)
+        self.data['resource_url'] = '{0}/lists/{1}'.format(client._base_url, dict_['id'])
+
+    def __repr__(self):
+        return self.repr_str('<UserList {0!r} {1!r}>'.format(self.id, self.name))
 
 
 # TODO: folder_id should be a Folder object; needs folder_url
@@ -735,5 +771,6 @@ CLASS_MAP = {
     'order': Order,
     'listing': Listing,
     'wantlistitem': WantlistItem,
-    'ordermessage': OrderMessage,
+    'userlistitem': UserListItem,
+    'ordermessage': OrderMessage
 }
