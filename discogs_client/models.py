@@ -596,6 +596,7 @@ class CollectionItemInstance(PrimaryAPIObject):
     rating = SimpleField()
     folder_id = SimpleField()
     notes = SimpleField()
+    date_added = SimpleField()
     release = ObjectField('Release', key='basic_information')
 
     def __init__(self, client, dict_):
