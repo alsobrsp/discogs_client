@@ -484,6 +484,7 @@ class Release(PrimaryAPIObject):
     released = SimpleField()
     estimated_weight = SimpleField()
     date_added = SimpleField()
+    date_changed = SimpleField()
     lowest_price = SimpleField()
 
     def __init__(self, client, dict_):
@@ -579,9 +580,10 @@ class User(PrimaryAPIObject):
         resp = self.client._get(self.fetch('collection_folders_url'))
         return [CollectionFolder(self.client, d) for d in resp['folders']]
 
+    @property
     def collection_fields(self):
         resp = self.client._get(self.fetch('collection_fields_url'))
-        return resp['fields']
+        return [CollectionFields(self.client, d) for d in resp['fields']]
 
     def collection_value(self):
         return self.client._get("{0}/collection/value".format(self.data['resource_url']))
@@ -669,6 +671,15 @@ class CollectionFolder(PrimaryAPIObject):
     def __repr__(self):
         return self.repr_str('<CollectionFolder {0!r} {1!r}>'.format(self.id, self.name))
 
+class CollectionFields(PrimaryAPIObject):
+    id = SimpleField()
+    name = SimpleField()
+
+    def __init__(self, client, dict_):
+        super(CollectionFields, self).__init__(client, dict_)
+
+    def __repr__(self):
+        return self.repr_str('<CollectionFields {0!r} {1!r}>'.format(self.id, self.name))
 
 class Listing(PrimaryAPIObject):
     id = SimpleField()
