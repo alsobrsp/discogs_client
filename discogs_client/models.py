@@ -447,6 +447,7 @@ class Artist(PrimaryAPIObject):
     aliases = ListField('Artist')
     members = ListField('Artist')
     groups = ListField('Artist')
+    role = SimpleField()
 
     def __init__(self, client, dict_):
         super(Artist, self).__init__(client, dict_)
@@ -480,6 +481,7 @@ class Release(PrimaryAPIObject):
     credits = ListField('Artist', key='extraartists')
     labels = ListField('Label')
     companies = ListField('Label')
+    identifiers = SimpleField()
     released_formatted = SimpleField()
     released = SimpleField()
     estimated_weight = SimpleField()
@@ -528,6 +530,7 @@ class Label(PrimaryAPIObject):
     id = SimpleField()
     name = SimpleField()
     profile = SimpleField()
+    catno = SimpleField()
     urls = SimpleField()
     images = SimpleField()
     contact_info = SimpleField()
