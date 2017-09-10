@@ -500,6 +500,11 @@ class Release(PrimaryAPIObject):
             return Master(self.client, {'id': master_id})
         else:
             return None
+    
+    @property
+    def price_suggestions(self):
+        resp = self.client._get('{0}/marketplace/price_suggestions/{1}'.format(self.client._base_url, self.id))
+        return resp
 
     def __repr__(self):
         return self.repr_str('<Release {0!r} {1!r}>'.format(self.id, self.title))
